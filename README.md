@@ -376,6 +376,84 @@ See [docs/deployment.md](docs/deployment.md) and [docs/diagrams.md](docs/diagram
 
 ---
 
+## Branching & Pull Requests
+
+Every repo here — the consumer repo and each of the six submodules — is trunk-based: `main` is the only long-lived branch and is expected to always build and deploy cleanly. Everything else is a short-lived branch that gets PR'd into `main` and deleted after merge.
+
+### Branch naming
+
+| Prefix | Used in | Purpose |
+|---|---|---|
+| `feature/<name>` | Any repo | New functionality |
+| `fix/<name>` | Any repo | Bug fix |
+| `chore/<name>` | Consumer repo | Non-functional changes — most commonly bumping a submodule pointer |
+| `module/<id>` | Consumer repo only | Pushing to this branch triggers `module-deploy.yml` for that module's BFF — see below |
+
+### Opening a PR on the consumer repo (`poc-blueprint`)
+
+```bash
+git checkout main && git pull
+git checkout -b feature/your-change
+
+# ... make changes, commit ...
+
+git push -u origin feature/your-change
+gh pr create --base main --title "feat: your change" --body "What changed and why."
+```
+
+Opening the PR triggers `ci.yml` (lint → typecheck → test → build) against the head commit, with submodules checked out at whatever they're currently pinned to in `.gitmodules`/the index. Merging to `main` triggers `cd.yml`, which builds the shell and deploys it to Vercel.
+
+### Opening a PR on a submodule (e.g. `module-a`)
+
+Each submodule is checked out as a real, independent git repo with its own remote — work inside it exactly like you would in any standalone repo, just from that subdirectory:
+
+```bash
+cd modules/module-a
+git checkout main && git pull
+git checkout -b feature/your-change
+
+# ... make changes, commit ...
+
+git push -u origin feature/your-change
+gh pr create --base main --title "feat: your change" --body "What changed and why."
+# gh auto-detects the repo (poc-blueprint-module-a) from this directory's own remote
+```
+
+The same pattern applies to `modules/module-b`, `modules/module-c`, `packages/shared-ui`, `packages/shared-utils`, and `branding` — just `cd` into that path first. None of these submodules currently have their own CI workflow; they're validated by the consumer repo's `ci.yml`, which builds and tests them as workspace projects whenever the consumer repo's `.gitmodules` pointer for that path is bumped (next step).
+
+### Bumping the consumer repo's submodule pointer after a submodule PR merges
+
+The submodule PR merging on its own repo does **not** automatically update the consumer repo — `modules/module-a` and friends are commit pointers, not live references. After merge:
+
+```bash
+cd modules/module-a
+git checkout main && git pull   # fast-forward to the now-merged commit
+
+cd ../..   # back to the consumer repo root
+git checkout main && git pull
+git checkout -b chore/bump-module-a
+git add modules/module-a
+git commit -m "chore: bump module-a submodule"
+git push -u origin chore/bump-module-a
+gh pr create --base main --title "chore: bump module-a submodule"
+```
+
+This PR is what actually ships the submodule's new commit to the consumer's build — `ci.yml` runs against the new pinned commit, and once merged, `cd.yml` redeploys the shell with it baked in.
+
+### Triggering a standalone module deploy
+
+If you only need to rebuild/redeploy a single module's BFF container (no shell changes), skip the PR and push straight to a `module/<id>` branch from the already-merged commit:
+
+```bash
+git checkout main && git pull
+git checkout -b module/module-a
+git push -u origin module/module-a
+```
+
+This triggers `module-deploy.yml`, which builds/tests just that module's BFF and pushes its Docker image to GHCR — independent of the shell's own CI/CD.
+
+---
+
 ## Dependency Rules
 
 ```
