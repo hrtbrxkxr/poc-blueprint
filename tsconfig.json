@@ -16,17 +16,16 @@
     "jsx": "preserve",
     "incremental": true,
     "plugins": [{ "name": "next" }],
-    "baseUrl": ".",
     "paths": {
-      "@/app/*": ["app/*"],
-      "@/shell/*": ["shell/*"],
-      "@/configs/*": ["configs/*"],
-      "@platform/shared-ui": ["packages/shared-ui/src/index.ts"],
-      "@platform/shared-ui/*": ["packages/shared-ui/src/*"],
-      "@platform/shared-utils": ["packages/shared-utils/src/index.ts"],
-      "@platform/shared-utils/*": ["packages/shared-utils/src/*"],
-      "@platform/branding": ["branding/index.ts"],
-      "@platform/branding/*": ["branding/*"]
+      "@/app/*": ["./app/*"],
+      "@/shell/*": ["./shell/*"],
+      "@/configs/*": ["./configs/*"],
+      "@platform/shared-ui": ["./packages/shared-ui/src/index.ts"],
+      "@platform/shared-ui/*": ["./packages/shared-ui/src/*"],
+      "@platform/shared-utils": ["./packages/shared-utils/src/index.ts"],
+      "@platform/shared-utils/*": ["./packages/shared-utils/src/*"],
+      "@platform/branding": ["./branding/index.ts"],
+      "@platform/branding/*": ["./branding/*"]
     }
   },
   "include": [
