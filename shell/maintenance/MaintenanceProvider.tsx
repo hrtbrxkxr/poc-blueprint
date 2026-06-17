@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { fetchMaintenanceState, type MaintenanceState } from "./maintenance.service";
+import { fetchMaintenanceStateClient, type MaintenanceState } from "./maintenance.client";
 import { MaintenancePage } from "./MaintenancePage";
 import { MAINTENANCE_POLL_INTERVAL_MS } from "../constants";
 
@@ -17,7 +17,7 @@ export function MaintenanceProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
     const poll = async () => {
-      const next = await fetchMaintenanceState();
+      const next = await fetchMaintenanceStateClient();
       if (active) setState(next);
     };
     poll();
