@@ -16,6 +16,21 @@ const environmentSchema = z.object({
 
 export type Environment = z.infer<typeof environmentSchema>;
 
+/**
+ * The server-only fields below (THEME_SERVICE_URL, AUTH_SERVICE_URL, MAINTENANCE_SERVICE_URL,
+ * JWT_ISSUER, JWT_AUDIENCE) may be hydrated from Vault at server boot (see
+ * shell/services/secrets.service.ts and instrumentation.ts) before this is ever read.
+ * Validation is lazy and cached so it runs *after* that hydration, not at import time.
+ */
+let cached: Environment | undefined;
+
+export function getEnv(): Environment {
+  if (!cached) {
+    cached = loadEnvironment();
+  }
+  return cached;
+}
+
 function loadEnvironment(): Environment {
   const parsed = environmentSchema.safeParse({
     NEXT_PUBLIC_CONSUMER_ID: process.env.NEXT_PUBLIC_CONSUMER_ID,
@@ -41,5 +56,3 @@ function loadEnvironment(): Environment {
 
   return parsed.data;
 }
-
-export const env = loadEnvironment();

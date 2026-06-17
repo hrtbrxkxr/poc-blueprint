@@ -300,26 +300,29 @@ NEXT_PUBLIC_ENV=development
 
 # Backend services
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
+
+# Local dev fallback values — in staging/production these are overwritten from
+# Vault at server boot, never read from here. See docs/secrets-management.md.
 THEME_SERVICE_URL=http://localhost:8080/theme
 AUTH_SERVICE_URL=http://localhost:8080/auth
 MAINTENANCE_SERVICE_URL=http://localhost:8080/maintenance
-
-# Module BFF endpoints (consumed by the shell's module loader)
-NEXT_PUBLIC_MODULE_A_BFF_URL=http://localhost:4001
-NEXT_PUBLIC_MODULE_B_BFF_URL=http://localhost:4002
-NEXT_PUBLIC_MODULE_C_BFF_URL=http://localhost:4003
-
-# Auth / JWT
 JWT_PUBLIC_KEY_URL=http://localhost:8080/auth/.well-known/jwks.json
 JWT_ISSUER=https://auth.platform.local
 JWT_AUDIENCE=consumer-a
 
-# Secrets (DO NOT commit real values — sourced from Vault in CI/CD)
+# Module BFF endpoints (consumed by the shell's module loader — not secret)
+NEXT_PUBLIC_MODULE_A_BFF_URL=http://localhost:4001
+NEXT_PUBLIC_MODULE_B_BFF_URL=http://localhost:4002
+NEXT_PUBLIC_MODULE_C_BFF_URL=http://localhost:4003
+
+# Vault AppRole — leave all three blank for local dev (no-op fallback to the values above)
 VAULT_ADDR=https://vault.internal:8200
-VAULT_ROLE=consumer-a-app
+VAULT_ROLE_ID=
+VAULT_SECRET_ID=
+VAULT_SECRET_PATH=secret/data/consumer-a
 ```
 
-All of these are validated at startup by `configs/environment.ts` (Zod) — a missing or malformed value fails the build immediately with a clear error instead of a runtime crash later.
+All of these are validated lazily (on first use, after Vault hydration runs) by `configs/environment.ts#getEnv()` (Zod) — a missing or malformed value throws immediately with a clear error instead of a runtime crash later. See [docs/secrets-management.md](docs/secrets-management.md) for exactly how the Vault-managed keys get from Vault into `process.env` before the app serves a single request.
 
 ---
 

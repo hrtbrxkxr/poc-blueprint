@@ -1,4 +1,4 @@
-import { env } from "@/configs/environment";
+import { getEnv } from "@/configs/environment";
 
 export interface MaintenanceState {
   global: boolean;
@@ -6,7 +6,7 @@ export interface MaintenanceState {
 }
 
 export async function fetchMaintenanceState(): Promise<MaintenanceState> {
-  const response = await fetch(env.MAINTENANCE_SERVICE_URL);
+  const response = await fetch(getEnv().MAINTENANCE_SERVICE_URL);
   if (!response.ok) {
     return { global: false, modules: {} };
   }

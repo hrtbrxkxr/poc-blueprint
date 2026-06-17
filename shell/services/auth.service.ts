@@ -1,8 +1,8 @@
-import { env } from "@/configs/environment";
+import { getEnv } from "@/configs/environment";
 import type { AuthSession } from "../types/auth.types";
 
 export async function login(email: string, password: string): Promise<AuthSession> {
-  const response = await fetch(`${env.AUTH_SERVICE_URL}/login`, {
+  const response = await fetch(`${getEnv().AUTH_SERVICE_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -16,5 +16,5 @@ export async function login(email: string, password: string): Promise<AuthSessio
 }
 
 export async function logoutRemote(): Promise<void> {
-  await fetch(`${env.AUTH_SERVICE_URL}/logout`, { method: "POST" });
+  await fetch(`${getEnv().AUTH_SERVICE_URL}/logout`, { method: "POST" });
 }

@@ -1,10 +1,20 @@
-import { jwtVerify, createRemoteJWKSet } from "jose";
-import { env } from "@/configs/environment";
+import { jwtVerify, createRemoteJWKSet, type JWTVerifyGetKey } from "jose";
+import { getEnv } from "@/configs/environment";
 
-const jwks = createRemoteJWKSet(new URL(process.env.JWT_PUBLIC_KEY_URL ?? "http://localhost:8080/auth/.well-known/jwks.json"));
+let jwks: JWTVerifyGetKey | undefined;
+
+function getJwks(): JWTVerifyGetKey {
+  if (!jwks) {
+    jwks = createRemoteJWKSet(
+      new URL(process.env.JWT_PUBLIC_KEY_URL ?? "http://localhost:8080/auth/.well-known/jwks.json"),
+    );
+  }
+  return jwks;
+}
 
 export async function verifyAccessToken(token: string) {
-  const { payload } = await jwtVerify(token, jwks, {
+  const env = getEnv();
+  const { payload } = await jwtVerify(token, getJwks(), {
     issuer: env.JWT_ISSUER,
     audience: env.JWT_AUDIENCE,
   });
