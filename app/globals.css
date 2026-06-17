@@ -1,0 +1,21 @@
+:root {
+  --color-primary: #2563eb;
+  --color-secondary: #22c55e;
+  --font-family: Inter, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  color: #111827;
+}
+
+@keyframes pf-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

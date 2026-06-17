@@ -1,0 +1,24 @@
+[submodule "packages/shared-ui"]
+	path = packages/shared-ui
+	url =  git@github.com:hrtbrxkxr/poc-blueprint-shared-ui.git
+    branch = main
+[submodule "packages/shared-utils"]
+	path = packages/shared-utils
+	url =  git@github.com:hrtbrxkxr/poc-blueprint-shared-utils.git
+    branch = main
+[submodule "branding"]
+	path = branding
+	url =  git@github.com:hrtbrxkxr/poc-blueprint-branding.git
+    branch = main
+[submodule "modules/module-a"]
+	path = modules/module-a
+	url =  git@github.com:hrtbrxkxr/poc-blueprint-module-a.git
+    branch = main
+[submodule "modules/module-b"]
+	path = modules/module-b
+	url =  git@github.com:hrtbrxkxr/poc-blueprint-module-b.git
+    branch = main
+[submodule "modules/module-c"]
+	path = modules/module-c
+	url =  git@github.com:hrtbrxkxr/poc-blueprint-module-c.git
+    branch = main

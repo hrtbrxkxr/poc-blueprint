@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "baseUrl": ".",
+    "paths": {
+      "@/app/*": ["app/*"],
+      "@/shell/*": ["shell/*"],
+      "@/configs/*": ["configs/*"],
+      "@platform/shared-ui": ["packages/shared-ui/src/index.ts"],
+      "@platform/shared-ui/*": ["packages/shared-ui/src/*"],
+      "@platform/shared-utils": ["packages/shared-utils/src/index.ts"],
+      "@platform/shared-utils/*": ["packages/shared-utils/src/*"],
+      "@platform/branding": ["branding/index.ts"],
+      "@platform/branding/*": ["branding/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "shell/**/*.ts",
+    "shell/**/*.tsx",
+    "configs/**/*.ts",
+    "tests/**/*.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", "**/node_modules/**", "modules", "packages", ".next"]
+}

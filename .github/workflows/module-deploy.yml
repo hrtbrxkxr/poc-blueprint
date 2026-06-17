@@ -1,0 +1,52 @@
+name: Module Deploy
+
+on:
+  push:
+    branches:
+      - "module/**"
+
+jobs:
+  detect-module:
+    runs-on: ubuntu-latest
+    outputs:
+      module_id: ${{ steps.extract.outputs.module_id }}
+    steps:
+      - id: extract
+        run: echo "module_id=$(echo '${{ github.ref_name }}' | cut -d'/' -f2)" >> "$GITHUB_OUTPUT"
+
+  build-test-deploy:
+    needs: detect-module
+    runs-on: ubuntu-latest
+    env:
+      MODULE_ID: ${{ needs.detect-module.outputs.module_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build module frontend
+        run: pnpm --filter "${MODULE_ID}-frontend" build || true
+
+      - name: Test module BFF
+        run: pnpm --filter "${MODULE_ID}-bff" test
+
+      - name: Build module BFF image
+        run: docker build -t "ghcr.io/${{ github.repository_owner }}/${MODULE_ID}-bff:${{ github.sha }}" "modules/${MODULE_ID}/bff"
+
+      - name: Push module BFF image
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker push "ghcr.io/${{ github.repository_owner }}/${MODULE_ID}-bff:${{ github.sha }}"
