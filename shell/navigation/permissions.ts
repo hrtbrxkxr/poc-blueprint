@@ -1,7 +1,7 @@
 import { getModule } from "../module-loader/registry";
 
 export function canAccessModule(moduleId: string, userPermissions: string[]): boolean {
-  const module = getModule(moduleId);
-  if (!module) return false;
-  return module.permissions.every((perm) => userPermissions.includes(perm));
+  const moduleConfig = getModule(moduleId);
+  if (!moduleConfig) return false;
+  return moduleConfig.permissions.every((perm) => userPermissions.includes(perm));
 }

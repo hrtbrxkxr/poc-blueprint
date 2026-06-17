@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["dom", "dom.iterable", "ES2022"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "ES2022"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -13,19 +17,41 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
-      "@/app/*": ["./app/*"],
-      "@/shell/*": ["./shell/*"],
-      "@/configs/*": ["./configs/*"],
-      "@platform/shared-ui": ["./packages/shared-ui/src/index.ts"],
-      "@platform/shared-ui/*": ["./packages/shared-ui/src/*"],
-      "@platform/shared-utils": ["./packages/shared-utils/src/index.ts"],
-      "@platform/shared-utils/*": ["./packages/shared-utils/src/*"],
-      "@platform/branding": ["./branding/index.ts"],
-      "@platform/branding/*": ["./branding/*"]
+      "@/app/*": [
+        "./app/*"
+      ],
+      "@/shell/*": [
+        "./shell/*"
+      ],
+      "@/configs/*": [
+        "./configs/*"
+      ],
+      "@platform/shared-ui": [
+        "./packages/shared-ui/src/index.ts"
+      ],
+      "@platform/shared-ui/*": [
+        "./packages/shared-ui/src/*"
+      ],
+      "@platform/shared-utils": [
+        "./packages/shared-utils/src/index.ts"
+      ],
+      "@platform/shared-utils/*": [
+        "./packages/shared-utils/src/*"
+      ],
+      "@platform/branding": [
+        "./branding/index.ts"
+      ],
+      "@platform/branding/*": [
+        "./branding/*"
+      ]
     }
   },
   "include": [
@@ -36,7 +62,14 @@
     "shell/**/*.tsx",
     "configs/**/*.ts",
     "tests/**/*.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "**/node_modules/**", "modules", "packages", ".next"]
+  "exclude": [
+    "node_modules",
+    "**/node_modules/**",
+    "modules",
+    "packages",
+    ".next"
+  ]
 }

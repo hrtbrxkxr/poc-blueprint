@@ -10,14 +10,14 @@ export type ModuleResolution =
   | { status: "forbidden" };
 
 export function useModuleResolution(moduleId: string): ModuleResolution {
-  const module = getModule(moduleId);
+  const moduleConfig = getModule(moduleId);
   const maintenance = useMaintenance();
   const permissions = usePermissions();
 
-  if (!module) return { status: "not-found" };
-  if (module.status === "disabled") return { status: "disabled" };
-  if (module.status === "maintenance" || maintenance.modules[moduleId]) return { status: "maintenance" };
-  if (module.requiresAuth && !module.permissions.every((perm) => permissions.includes(perm))) {
+  if (!moduleConfig) return { status: "not-found" };
+  if (moduleConfig.status === "disabled") return { status: "disabled" };
+  if (moduleConfig.status === "maintenance" || maintenance.modules[moduleId]) return { status: "maintenance" };
+  if (moduleConfig.requiresAuth && !moduleConfig.permissions.every((perm) => permissions.includes(perm))) {
     return { status: "forbidden" };
   }
   return { status: "ready" };
