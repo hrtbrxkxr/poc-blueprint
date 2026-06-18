@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { Loader } from "@platform/shared-ui";
+import { Spinner } from "@hrtbrxkxr/shared-ui";
 import { getModule } from "./registry";
 import { lazyModules } from "./loadModule";
 import { useModuleResolution } from "./moduleResolver";
@@ -20,7 +20,7 @@ export function ModuleRenderer({ moduleId }: { moduleId: string }) {
   if (!moduleConfig || !LazyModule) return null;
 
   const content = (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<Spinner />}>
       <ModuleErrorBoundary moduleId={moduleId}>
         <LazyModule bffUrl={moduleConfig.bffUrl} />
       </ModuleErrorBoundary>

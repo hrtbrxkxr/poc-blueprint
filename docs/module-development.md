@@ -13,7 +13,7 @@ Each module is its own Git submodule (`modules/module-a`, `modules/module-b`, `m
 
 ## Rules
 
-- A module frontend may only import `@platform/shared-ui` and `@platform/shared-utils`.
+- A module frontend may only import `@hrtbrxkxr/shared-ui` and `@hrtbrxkxr/shared-utils`.
 - A module BFF may only call its own backend services — never another module's BFF.
 - No module may import another module's code.
 

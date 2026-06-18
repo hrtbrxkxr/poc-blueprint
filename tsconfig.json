@@ -34,16 +34,16 @@
       "@/configs/*": [
         "./configs/*"
       ],
-      "@platform/shared-ui": [
+      "@hrtbrxkxr/shared-ui": [
         "./packages/shared-ui/src/index.ts"
       ],
-      "@platform/shared-ui/*": [
+      "@hrtbrxkxr/shared-ui/*": [
         "./packages/shared-ui/src/*"
       ],
-      "@platform/shared-utils": [
+      "@hrtbrxkxr/shared-utils": [
         "./packages/shared-utils/src/index.ts"
       ],
-      "@platform/shared-utils/*": [
+      "@hrtbrxkxr/shared-utils/*": [
         "./packages/shared-utils/src/*"
       ],
       "@platform/branding": [

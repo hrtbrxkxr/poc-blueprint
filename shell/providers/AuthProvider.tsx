@@ -1,6 +1,6 @@
 "use client";
 
-import { createTypedStorage } from "@platform/shared-utils";
+import { createTypedStorage } from "@hrtbrxkxr/shared-utils";
 import { useEffect, type ReactNode } from "react";
 import { useAuthStore } from "../state/stores/auth.store";
 import { AUTH_TOKEN_STORAGE_KEY } from "../constants";

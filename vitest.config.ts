@@ -11,8 +11,8 @@ export default defineConfig({
     alias: {
       "@/shell": path.resolve(__dirname, "shell"),
       "@/configs": path.resolve(__dirname, "configs"),
-      "@platform/shared-ui": path.resolve(__dirname, "packages/shared-ui/src/index.ts"),
-      "@platform/shared-utils": path.resolve(__dirname, "packages/shared-utils/src/index.ts"),
+      "@hrtbrxkxr/shared-ui": path.resolve(__dirname, "packages/shared-ui/src/index.ts"),
+      "@hrtbrxkxr/shared-utils": path.resolve(__dirname, "packages/shared-utils/src/index.ts"),
     },
   },
 });

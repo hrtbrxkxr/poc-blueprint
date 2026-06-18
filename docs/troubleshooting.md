@@ -2,7 +2,7 @@
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `Cannot find module '@platform/shared-ui'` | Submodules not initialized | `pnpm submodules:init` |
+| `Cannot find module '@hrtbrxkxr/shared-ui'` | Submodules not initialized | `pnpm submodules:init` |
 | Empty `modules/`, `branding/`, `packages/shared-*` folders | Cloned without `--recurse-submodules` | `git submodule update --init --recursive` |
 | Theme flashes default colors on load | `fetchTheme()` failing server-side, falling back to `themeConfig.fallback` | Check `THEME_SERVICE_URL` in `.env` |
 | Module route 404s | Module not registered in `configs/modules.ts` or no case in `shell/module-loader/loadModule.ts` | Add both |

@@ -1,5 +1,5 @@
-import { hydrateEnvFromVault } from "@platform/shared-utils";
-import { createLogger } from "@platform/shared-utils";
+import { hydrateEnvFromVault } from "@hrtbrxkxr/shared-utils";
+import { createLogger } from "@hrtbrxkxr/shared-utils";
 
 const logger = createLogger("secrets-bootstrap");
 

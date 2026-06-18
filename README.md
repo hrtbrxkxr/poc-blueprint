@@ -106,7 +106,7 @@ pnpm build
 pnpm --filter module-a-bff build
 ```
 
-There's no separate "build shared packages first" step — `@platform/shared-ui` and `@platform/shared-utils` are TypeScript-source workspace packages (`workspace:*`) consumed directly by the shell's bundler; they don't need a pre-build.
+There's no separate "build shared packages first" step — `@hrtbrxkxr/shared-ui` and `@hrtbrxkxr/shared-utils` are TypeScript-source workspace packages (`workspace:*`) consumed directly by the shell's bundler; they don't need a pre-build.
 
 ---
 
@@ -144,7 +144,7 @@ Visit a module directly at `http://localhost:3000/modules/module-a`.
 pnpm test
 
 # A submodule's own tests
-pnpm --filter @platform/shared-utils test
+pnpm --filter @hrtbrxkxr/shared-utils test
 pnpm --filter module-a-bff test
 
 # Module A's integration tests (frontend+bff, uses Supertest)
@@ -160,7 +160,7 @@ cd modules/module-a && pnpm exec vitest run
 pnpm typecheck
 
 # A submodule, independently
-pnpm --filter @platform/shared-ui typecheck
+pnpm --filter @hrtbrxkxr/shared-ui typecheck
 pnpm --filter module-a-bff typecheck
 ```
 
@@ -481,7 +481,7 @@ Enforced by `eslint-plugin-boundaries` — see `.eslintrc.json` and [docs/archit
 git submodule update --init --recursive
 ```
 
-**`Cannot find module '@platform/shared-ui'`**
+**`Cannot find module '@hrtbrxkxr/shared-ui'`**
 ```bash
 pnpm submodules:init
 pnpm install

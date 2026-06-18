@@ -12,7 +12,7 @@ The shell must **not** contain business logic, API logic (beyond its own auth/th
 
 ## Dependency rules
 
-- Shell may import `@platform/shared-ui`, `@platform/shared-utils`, `@platform/branding`, `configs/*`, and module entry points via the module loader.
+- Shell may import `@hrtbrxkxr/shared-ui`, `@hrtbrxkxr/shared-utils`, `@platform/branding`, `configs/*`, and module entry points via the module loader.
 - Shell must not import module internals directly (only the public `frontend/index.ts` export of each module).
 - Modules must never import the shell.
 
