@@ -1,8 +1,17 @@
-:root {
-  --color-primary: #2563eb;
-  --color-secondary: #22c55e;
-  --font-family: Inter, sans-serif;
-}
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Tailwind v4 auto-detects content, but these submodules are real
+   directories (not node_modules) symlinked in via pnpm workspaces —
+   be explicit so class usage there is never missed. */
+@source "../packages/shared-ui/src/**/*.{ts,tsx}";
+@source "../modules/**/*.{ts,tsx}";
+
+/* Design tokens live in the shared-ui submodule (it's the only place
+   guaranteed to be present everywhere they're needed — including
+   shared-ui's own standalone Storybook, which has no consumer repo
+   around it at all). Never re-declare these values here. */
+@import "@hrtbrxkxr/shared-ui/theme.css";
 
 * {
   box-sizing: border-box;

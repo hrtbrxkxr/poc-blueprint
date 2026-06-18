@@ -14,7 +14,7 @@ Each consumer is its own fork of this repository. The shell (`app/` + `shell/` +
 | [poc-blueprint-module-a](https://github.com/hrtbrxkxr/poc-blueprint-module-a) | Module A — BMI Calculator (frontend + BFF), fully implemented |
 | [poc-blueprint-module-b](https://github.com/hrtbrxkxr/poc-blueprint-module-b) | Module B (placeholder, follows module-a's pattern) |
 | [poc-blueprint-module-c](https://github.com/hrtbrxkxr/poc-blueprint-module-c) | Module C (placeholder, follows module-a's pattern) |
-| [poc-blueprint-shared-ui](https://github.com/hrtbrxkxr/poc-blueprint-shared-ui) | Design system — Button, Input, Modal, Table, Tabs, Toast, Loader, Card |
+| [poc-blueprint-shared-ui](https://github.com/hrtbrxkxr/poc-blueprint-shared-ui) | Design system (shadcn/ui + Tailwind v4) — Button, Input, Label, Card, Dialog, Table, Tabs, Sonner, Spinner |
 | [poc-blueprint-shared-utils](https://github.com/hrtbrxkxr/poc-blueprint-shared-utils) | Utilities — date, number, string, storage, logger, debounce, validation |
 | [poc-blueprint-branding](https://github.com/hrtbrxkxr/poc-blueprint-branding) | consumer-a logos, icons, fonts, images, assets |
 
@@ -24,10 +24,11 @@ There is no separate `shell` repository — unlike microfrontend/Module-Federati
 
 ## Tech Stack
 
-- **Next.js 15** (App Router)
+- **Next.js 16** (App Router, Turbopack) + **React 19**
 - **TypeScript**
 - **pnpm** workspaces
 - **Turborepo**
+- **Tailwind CSS v4** + **shadcn/ui** (Radix primitives, class-variance-authority) — the design system in `packages/shared-ui`
 - **Zustand** (global state: auth, theme, app)
 - **TanStack React Query**
 - **Zod** (config + request validation)
@@ -36,7 +37,7 @@ There is no separate `shell` repository — unlike microfrontend/Module-Federati
 - **jose** (JWT verification via remote JWKS)
 - **eslint-plugin-boundaries** (enforces module isolation)
 
-No Module Federation, no Tailwind, no monorepo — modules are lazily `import()`-ed by `shell/module-loader/loadModule.ts` directly from their submodule path and bundled into the single shell build.
+No Module Federation, no monorepo — modules are lazily `import()`-ed by `shell/module-loader/loadModule.ts` directly from their submodule path and bundled into the single shell build.
 
 ---
 
@@ -104,9 +105,14 @@ pnpm build
 
 # Build a specific module's BFF (compiles to dist/, used by its Dockerfile)
 pnpm --filter module-a-bff build
+
+# Build shared-ui / shared-utils to dist/ (compiled JS + .d.ts + a precompiled
+# Tailwind CSS bundle for shared-ui — see "Run a Submodule Standalone" below)
+pnpm --filter @hrtbrxkxr/shared-ui build
+pnpm --filter @hrtbrxkxr/shared-utils build
 ```
 
-There's no separate "build shared packages first" step — `@hrtbrxkxr/shared-ui` and `@hrtbrxkxr/shared-utils` are TypeScript-source workspace packages (`workspace:*`) consumed directly by the shell's bundler; they don't need a pre-build.
+The shell itself never needs that last step — `tsconfig.json` maps `@hrtbrxkxr/shared-ui`/`@hrtbrxkxr/shared-utils` straight to each package's `src/`, so Next.js bundles the source directly and a stale or missing `dist/` doesn't affect `pnpm dev`/`pnpm build` at the shell level. `dist/` only matters for tools that resolve these packages through real npm resolution instead of that tsconfig alias — Vite-based tooling (a module's standalone dev harness, `pnpm build` inside the package itself) and the published npm package both need it. If you're actively editing `shared-ui`/`shared-utils` while also running a module's standalone dev harness, run `pnpm dev` inside that package instead of `build` — it's a `tsc --watch` (+ CSS watch for shared-ui) that keeps `dist/` live.
 
 ---
 
@@ -134,6 +140,58 @@ pnpm --filter module-a-bff dev
 Visit a module directly at `http://localhost:3000/modules/module-a`.
 
 > **Note:** A module's BFF only needs to be running if you're exercising that module's data fetching (e.g. clicking "Calculate" in the BMI Calculator). The shell and module UI render fine without it — only the network call fails, caught by `shell/boundaries/ModuleErrorBoundary.tsx`.
+
+---
+
+## Run a Submodule Standalone
+
+Every submodule is a complete, independent git repo — you don't need this consumer repo (or any consumer repo) checked out to work on one. Clone just that one repo and it runs entirely on its own:
+
+```bash
+git clone git@github.com:hrtbrxkxr/poc-blueprint-module-a.git
+cd poc-blueprint-module-a
+```
+
+**One-time setup — GitHub Packages auth.** `@hrtbrxkxr/shared-ui` and `@hrtbrxkxr/shared-utils` are published to GitHub Packages, not the public npm registry, so `pnpm install` needs an authenticated token even though the packages themselves are readable. Export a GitHub PAT with the `read:packages` scope before installing:
+
+```bash
+export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+pnpm install
+```
+
+(The repo's own `.npmrc` already points the `@hrtbrxkxr` scope at `https://npm.pkg.github.com` and reads `GITHUB_TOKEN` from the environment — see [docs/submodule-guide.md](docs/submodule-guide.md#publishing-shared-ui--shared-utils).)
+
+**Running a module (e.g. module-a) standalone:**
+
+```bash
+# Terminal 1 — the module's own BFF (http://localhost:4001)
+cd bff && pnpm dev
+
+# Terminal 2 — the module's frontend, in a minimal Vite playground (http://localhost:5173)
+pnpm dev
+```
+
+The frontend playground (`frontend/dev/`) mounts the module's page component directly — no shell, no auth, no other modules. If you only need to look at markup/styling, the frontend alone is enough; if you're exercising real data fetching (e.g. clicking "Calculate"), start the BFF too, same as when running through the full shell.
+
+**Running shared-ui standalone** (component library + Storybook, no modules/shell involved):
+
+```bash
+git clone git@github.com:hrtbrxkxr/poc-blueprint-shared-ui.git
+cd poc-blueprint-shared-ui
+GITHUB_TOKEN=ghp_xxxx pnpm install
+pnpm storybook   # http://localhost:6006
+```
+
+**Running shared-utils standalone** (no UI, just the utility functions + their tests):
+
+```bash
+git clone git@github.com:hrtbrxkxr/poc-blueprint-shared-utils.git
+cd poc-blueprint-shared-utils
+GITHUB_TOKEN=ghp_xxxx pnpm install
+pnpm test
+```
+
+`module-b` and `module-c` are currently placeholders (no `frontend/`/`bff/` yet) — once filled in following module-a's structure, the same standalone clone-and-run pattern applies automatically, since it comes from each module's own `vite.config.ts` + `frontend/dev/` harness, not from anything in this consumer repo.
 
 ---
 
@@ -218,6 +276,18 @@ git push origin main
 git submodule sync --recursive && git submodule foreach 'git push -u origin main'
 ```
 
+### Publish a new version of shared-ui or shared-utils
+
+Pushing to `main` updates the repo, but `module-a` and any other standalone consumer keep resolving whatever version is currently published to GitHub Packages until you cut a new one. From inside the submodule, after your change is merged to `main`:
+
+```bash
+cd packages/shared-ui          # or packages/shared-utils
+npm version patch              # bumps package.json + creates a git tag (e.g. v1.0.1)
+git push origin main --tags
+```
+
+Pushing the tag triggers that repo's own `.github/workflows/publish.yml`, which builds (`pnpm build`) and publishes to GitHub Packages. See [docs/submodule-guide.md](docs/submodule-guide.md#publishing-shared-ui--shared-utils) for the full flow, including the one-time `GITHUB_TOKEN` setup required for any standalone clone to `pnpm install` it afterward.
+
 ---
 
 ## Project Structure
@@ -226,7 +296,7 @@ git submodule sync --recursive && git submodule foreach 'git push -u origin main
 poc-blueprint/                     ← You are here (consumer-a)
 ├── .gitmodules                    ← Submodule declarations
 ├── .gitignore
-├── .eslintrc.json                 ← eslint-plugin-boundaries module-isolation rules
+├── eslint.config.mjs                 ← eslint-plugin-boundaries module-isolation rules
 ├── package.json                   ← Root scripts
 ├── pnpm-workspace.yaml            ← Workspace members
 ├── turbo.json                     ← Build pipeline
@@ -261,14 +331,17 @@ poc-blueprint/                     ← You are here (consumer-a)
 ├── modules/
 │   ├── module-a/                  ← [submodule] BMI Calculator, fully implemented
 │   │   ├── frontend/               ← components/hooks/services/validations/constants/types
+│   │   │   └── dev/                 ← standalone Vite playground (pnpm dev, no shell/auth)
 │   │   ├── bff/                    ← Express routes/services/clients/middleware/mappers (port 4001)
 │   │   ├── tests/                  ← unit/integration/mocks
+│   │   ├── vite.config.ts          ← powers the standalone frontend/dev playground
 │   │   └── module.config.ts
 │   ├── module-b/                  ← [submodule] placeholder
 │   └── module-c/                  ← [submodule] placeholder
 │
 ├── packages/
-│   ├── shared-ui/                 ← [submodule] design system + Storybook
+│   ├── shared-ui/                 ← [submodule] design system (Tailwind v4 + shadcn/ui) + Storybook
+│   │   └── dist/                    ← build output (gitignored) — compiled JS/d.ts + shared-ui.css bundle
 │   └── shared-utils/               ← [submodule] date/number/string/storage/logger/debounce/validation
 │
 ├── branding/                      ← [submodule] consumer-a logos, icons, fonts, images
@@ -470,7 +543,7 @@ FORBIDDEN
   module-*         →  shell                       (modules must never import shell)
 ```
 
-Enforced by `eslint-plugin-boundaries` — see `.eslintrc.json` and [docs/architecture.md](docs/architecture.md#dependency-rules).
+Enforced by `eslint-plugin-boundaries` — see `eslint.config.mjs` and [docs/architecture.md](docs/architecture.md#dependency-rules).
 
 ---
 
