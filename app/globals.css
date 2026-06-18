@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* Tailwind v4 auto-detects content, but these submodules are real
    directories (not node_modules) symlinked in via pnpm workspaces —
@@ -6,38 +7,11 @@
 @source "../packages/shared-ui/src/**/*.{ts,tsx}";
 @source "../modules/**/*.{ts,tsx}";
 
-@theme {
-  /* --color-primary / --color-secondary intentionally double as the
-     platform's existing dynamic brand variables — shell/providers/ThemeProvider.tsx
-     overwrites them at runtime per consumer via document.documentElement.style,
-     so shadcn/ui's bg-primary/text-primary utilities automatically follow
-     whatever theme the backend returns, with no extra wiring. */
-  --color-primary: #2563eb;
-  --color-secondary: #22c55e;
-  --color-primary-foreground: oklch(0.985 0 0);
-  --color-secondary-foreground: oklch(0.985 0 0);
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.145 0 0);
-  --color-muted: oklch(0.97 0 0);
-  --color-muted-foreground: oklch(0.556 0 0);
-  --color-accent: oklch(0.97 0 0);
-  --color-accent-foreground: oklch(0.205 0 0);
-  --color-destructive: oklch(0.577 0.245 27.325);
-  --color-destructive-foreground: oklch(0.985 0 0);
-  --color-border: oklch(0.922 0 0);
-  --color-input: oklch(0.922 0 0);
-  --color-ring: oklch(0.708 0 0);
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.625rem;
-  --radius-xl: 1rem;
-}
-
-/* Plain (non-Tailwind) variable — read directly via var(--font-family) by
-   the inline styles in every other shared-ui component (Input, Card, etc). */
-:root {
-  --font-family: Inter, sans-serif;
-}
+/* Design tokens live in the shared-ui submodule (it's the only place
+   guaranteed to be present everywhere they're needed — including
+   shared-ui's own standalone Storybook, which has no consumer repo
+   around it at all). Never re-declare these values here. */
+@import "@platform/shared-ui/theme.css";
 
 * {
   box-sizing: border-box;
